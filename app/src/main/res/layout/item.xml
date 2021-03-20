@@ -56,18 +56,6 @@
                 android:textColor="@color/black"
                 android:textSize="18sp" />
 
-            <Button
-                android:id="@+id/btnSale"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Sale"
-                android:onClick="sale"
-                android:layout_gravity="center_horizontal"
-                android:textColor="@color/secondaryWhite"
-                android:backgroundTint="@color/secondaryLightColor"
-                android:shadowRadius="5"
-                />
-
         </LinearLayout>
 
         <ImageView

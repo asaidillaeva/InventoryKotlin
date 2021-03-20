@@ -24,6 +24,8 @@ class ProductViewModel(private val productRepository: ProductRepository): ViewMo
         productRepository.update(product)
     }
 
+    fun getById(id: String) =viewModelScope.launch { productRepository.getById(id) }
+
 }
 
 class ProductViewModelFactory(private val repository: ProductRepository): ViewModelProvider.Factory{

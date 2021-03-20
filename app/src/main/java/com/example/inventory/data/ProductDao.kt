@@ -1,5 +1,6 @@
 package com.example.inventory.data
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
@@ -20,4 +21,7 @@ interface ProductDao {
 
     @Query("SELECT * FROM product ORDER BY id DESC")
     fun getAllItems(): Flow<List<Product>>
+
+    @Query("SELECT * FROM PRODUCT WHERE id=:id ")
+    fun getById(id: String): LiveData<Product>
 }

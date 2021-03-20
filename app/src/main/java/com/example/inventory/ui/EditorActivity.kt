@@ -11,6 +11,7 @@ class EditorActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editor)
 
+
     }
 
     fun delete(item: MenuItem) {}

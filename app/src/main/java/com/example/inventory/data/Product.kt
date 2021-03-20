@@ -10,14 +10,20 @@ data class Product(
     var price: Int,
     var quantity: Int,
     var supplier: String,
-    var image: ByteArray?
+    var image: ByteArray? =null
 
 ) : Serializable {
     constructor(title: String, price: Int, quantity: Int, supplier: String): this(
      title, price, quantity, supplier, image = null
     )
 
+    constructor(reply: Product) : this(
+        title = reply.title, price = reply.price, quantity = reply.quantity, supplier = reply.supplier,
+    image = reply.image
+    )
+
+
     @PrimaryKey(autoGenerate = true)
-    var id: Int = 0
+    lateinit var id: String
 
 }

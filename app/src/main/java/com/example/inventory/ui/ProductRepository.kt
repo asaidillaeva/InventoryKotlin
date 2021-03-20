@@ -33,4 +33,9 @@ class ProductRepository(private val productDao: ProductDao) {
         productDao.update(product)
     }
 
+    @Suppress("RedundantSuspendModifier")
+    @WorkerThread
+    suspend fun  getById(id:String){
+        productDao.getById(id)
+    }
 }
