@@ -1,10 +1,10 @@
 package com.example.inventory.ui
 
+import android.os.AsyncTask
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import com.example.inventory.data.Product
 import com.example.inventory.data.ProductDao
-import kotlinx.coroutines.flow.Flow
 
 class ProductRepository(private val productDao: ProductDao) {
 
@@ -12,26 +12,55 @@ class ProductRepository(private val productDao: ProductDao) {
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    suspend fun insert(product: Product){
-        productDao.insert(product)
+    suspend fun insert(product: Product) {
+        InsertItemAsyncTask(productDao)
     }
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    suspend fun delete(product: Product){
-        productDao.delete(product)
+    suspend fun delete(product: Product) {
+        DeleteItemAsyncTask(productDao)
     }
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    suspend fun deleteAll(){
-        productDao.deleteAllItems()
+    suspend fun deleteAll() {
+        DeleteAllItemsAsyncTask(productDao)
     }
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    suspend fun update(product: Product){
-        productDao.update(product)
+    suspend fun update(product: Product) {
+        UpdateItemAsyncTask(productDao)
     }
 
+    companion object {
+        private class InsertItemAsyncTask(private val itemDAO: ProductDao) :
+            AsyncTask<Product, Unit, Unit>() {
+            override fun doInBackground(vararg params: Product?) {
+                itemDAO.insert(params[0]!!)
+            }
+        }
+
+        private class UpdateItemAsyncTask(private val itemDAO: ProductDao) :
+            AsyncTask<Product, Unit, Unit>() {
+            override fun doInBackground(vararg params: Product?) {
+                itemDAO.update(params[0]!!)
+            }
+        }
+
+        private class DeleteItemAsyncTask(private val itemDAO: ProductDao) :
+            AsyncTask<Product, Unit, Unit>() {
+            override fun doInBackground(vararg params: Product?) {
+                itemDAO.delete(params[0]!!)
+            }
+        }
+
+        private class DeleteAllItemsAsyncTask(private val itemDAO: ProductDao) :
+            AsyncTask<Product, Unit, Unit>() {
+            override fun doInBackground(vararg params: Product?) {
+                itemDAO.deleteAllItems()
+            }
+        }
+    }
 }

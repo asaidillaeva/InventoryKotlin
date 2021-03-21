@@ -10,7 +10,6 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,8 +25,8 @@ class MainActivity : AppCompatActivity(), RecyclerAdapter.ItemClickListener {
         const val EDIT = 2
     }
 
-
-     private val productViewModel: ProductViewModel by viewModels {
+    val adapter = RecyclerAdapter(this)
+    private val productViewModel: ProductViewModel by viewModels {
         ProductViewModelFactory((application as ProductApplication).repository)
     }
 
@@ -35,9 +34,9 @@ class MainActivity : AppCompatActivity(), RecyclerAdapter.ItemClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val adapter = RecyclerAdapter(this)
         recycler.adapter = adapter
         recycler.layoutManager = LinearLayoutManager(this)
+        recycler.setHasFixedSize(true)
 
         productViewModel.allProducts.observe(this) { products ->
             products.let { adapter.submitList(it) }
@@ -59,6 +58,7 @@ class MainActivity : AppCompatActivity(), RecyclerAdapter.ItemClickListener {
                     .setCancelable(false)
                     .setPositiveButton("DELETE") { _, _ ->
                         productViewModel.delete(adapter.getItemAt(viewHolder.adapterPosition))
+                        adapter.notifyDataSetChanged()
                     }
                 dialogBuilder.setNegativeButton("CANCEL") { _, _ ->
                     Toast.makeText(this@MainActivity, "Cancelled", Toast.LENGTH_SHORT).show()
@@ -77,9 +77,12 @@ class MainActivity : AppCompatActivity(), RecyclerAdapter.ItemClickListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CREATE && resultCode == Activity.RESULT_OK) {
-            Toast.makeText(this, "New item has been added", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Product has been added", Toast.LENGTH_SHORT).show()
+            adapter.notifyDataSetChanged()
+
         } else if (requestCode == EDIT && resultCode == Activity.RESULT_OK) {
-            Toast.makeText(this, "Item has been Updated", Toast.LENGTH_SHORT).show()
+            adapter.notifyDataSetChanged()
+            Toast.makeText(this, "Product has not been updated", Toast.LENGTH_SHORT).show()
         }
 
     }
@@ -90,12 +93,14 @@ class MainActivity : AppCompatActivity(), RecyclerAdapter.ItemClickListener {
             .setCancelable(false)
             .setPositiveButton("DELETE") { _, _ ->
                 productViewModel.deleteAll()
+                adapter.notifyDataSetChanged()
+
             }
         dialogBuilder.setNegativeButton("CANCEL") { _, _ ->
             Toast.makeText(this@MainActivity, "Cancelled", Toast.LENGTH_SHORT).show()
         }
         val alert = dialogBuilder.create()
-        alert.setTitle("CAUTION:")
+        alert.setTitle("CAUTION")
         alert.show()
     }
 

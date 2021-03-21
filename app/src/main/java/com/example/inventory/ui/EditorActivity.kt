@@ -1,6 +1,6 @@
 package com.example.inventory.ui
 
-import android.app.AlertDialog
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -8,9 +8,9 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toBitmap
 import com.example.inventory.ProductApplication
 import com.example.inventory.R
 import com.example.inventory.data.Product
@@ -36,8 +36,8 @@ class EditorActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_editor)
-        if (intent.hasExtra("productId")) {
-            product = intent.extras?.get("productId") as Product
+        if (intent.hasExtra("product")) {
+            product = intent.extras?.get("product") as Product
             titleEdit.setText(product.title)
             priceEdit.setText(product.price)
             quantity.setText(product.quantity)
@@ -53,7 +53,6 @@ class EditorActivity : AppCompatActivity() {
     }
 
 
-
     private fun bitmapToByte(image: Bitmap): ByteArray {
         val stream = ByteArrayOutputStream()
         image.compress(Bitmap.CompressFormat.JPEG, 25, stream)
@@ -65,21 +64,6 @@ class EditorActivity : AppCompatActivity() {
         return BitmapFactory.decodeStream(imgStream)
     }
 
-    fun delete(item: MenuItem) {
-        val dialogBuilder = AlertDialog.Builder(this@EditorActivity)
-        dialogBuilder.setMessage("Are you sure to delete this item?")
-            .setCancelable(false)
-            .setPositiveButton("DELETE") { _, _ ->
-                productViewModel.delete(product)
-            }
-        dialogBuilder.setNegativeButton("CANCEL") { _, _ ->
-            Toast.makeText(this@EditorActivity, "Cancelled", Toast.LENGTH_SHORT).show()
-        }
-        val alert = dialogBuilder.create()
-        alert.setTitle("CAUTION:")
-        alert.show()
-        true
-    }
 
     fun addImage(view: View) {
         val takePicIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -89,8 +73,48 @@ class EditorActivity : AppCompatActivity() {
     }
 
     fun save(item: MenuItem) {
+        when {
+            titleEdit.text.trim().isBlank() -> {
+                titleEdit.error = "Fill in the field!"
+                return
+            }
+            priceEdit.text.trim().isBlank() -> {
+                priceEdit.error = "Fill in the field!"
+                return
+            }
+            quantityEdit.text.trim().isBlank() -> {
+                quantityEdit.error = "Fill in the field!"
+                return
+            }
+            supplierEdit.text.trim().isBlank() -> {
+                supplierEdit.setText("NoName")
+            }
+            imageEdit.drawable == null -> {
+                imageEdit.setImageResource(R.drawable.ic_bag)
+            }
+        }
 
+        val productTitle = titleEdit.text.trim().toString()
+        val productPrice = Integer.valueOf(priceEdit.text.trim().toString())
+        val productQuantity = Integer.valueOf(quantityEdit.text.trim().toString())
+        val productSupplier = supplierEdit.text.trim().toString()
+
+        val bitmap: Bitmap = imageEdit.drawable.toBitmap(100, 100, null)
+        val image = bitmapToByte(bitmap)
+
+        val intent = Intent()
+
+        val product = Product(productTitle, productPrice, productQuantity, productSupplier, image)
+        productViewModel.insert(product)
+        if (CODE == 1) {
+            productViewModel.insert(product)
+
+        } else (productViewModel.insert(product)
+                )
+        setResult(Activity.RESULT_OK, intent)
+        finish()
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -99,5 +123,9 @@ class EditorActivity : AppCompatActivity() {
             val image = extras.get("data")
             imageEdit.setImageBitmap(image as Bitmap?)
         }
+    }
+
+    fun back(view: View) {
+        this.finish()
     }
 }
