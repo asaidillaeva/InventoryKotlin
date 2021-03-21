@@ -7,4 +7,10 @@
         android:title="Delete All"
         android:onClick="delete"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/save"
+        android:icon="@drawable/ic_baseline_save_alt_24"
+        android:title="Save"
+        android:onClick="save"
+        app:showAsAction="ifRoom"/>
 </menu>

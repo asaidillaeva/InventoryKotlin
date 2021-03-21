@@ -1,14 +1,17 @@
 package com.example.inventory.ui
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.Product
 import kotlinx.coroutines.launch
 
-class ProductViewModel(private val productRepository: ProductRepository): ViewModel() {
+class ProductViewModel(private val productRepository: ProductRepository) : ViewModel() {
 
-    public val allProducts: LiveData<List<Product>> = productRepository.allProducts.asLiveData()
+    val allProducts: LiveData<List<Product>> = productRepository.allProducts
 
-    fun insert(product: Product)= viewModelScope.launch {
+    fun insert(product: Product) = viewModelScope.launch {
         productRepository.insert(product)
     }
 
@@ -24,18 +27,15 @@ class ProductViewModel(private val productRepository: ProductRepository): ViewMo
         productRepository.update(product)
     }
 
-    fun getById(id: String) =viewModelScope.launch { productRepository.getById(id) }
 
 }
 
-class ProductViewModelFactory(private val repository: ProductRepository): ViewModelProvider.Factory{
-
+class ProductViewModelFactory(private val repository: ProductRepository) :
+    ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            if(modelClass.isAssignableFrom(ProductRepository::class.java)){
-                @Suppress("UNCHECKED_CAST")
-                return ProductViewModel(repository) as T
-            }
-        throw IllegalArgumentException("Unknown ViewModel class")
+            @Suppress("UNCHECKED_CAST")
+            return ProductViewModel(repository) as T
     }
+
 
 }

@@ -16,12 +16,10 @@ interface ProductDao {
     @Delete
     fun delete(item: Product)
 
-    @Query("DELETE FROM product")
+    @Query("DELETE  FROM table_product")
     fun deleteAllItems()
 
-    @Query("SELECT * FROM product ORDER BY id DESC")
-    fun getAllItems(): Flow<List<Product>>
+    @Query("SELECT * FROM table_product ORDER BY id DESC")
+    fun getAllItems(): LiveData<List<Product>>
 
-    @Query("SELECT * FROM PRODUCT WHERE id=:id ")
-    fun getById(id: String): LiveData<Product>
 }

@@ -27,6 +27,10 @@ class RecyclerAdapter(private var listener: ItemClickListener) :
         return ProductViewHolder(view)
     }
 
+    fun getItemAt(position: Int): Product {
+        return getItem(position)
+    }
+
     inner class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         private val titleView = itemView.findViewById<TextView>(R.id.title)

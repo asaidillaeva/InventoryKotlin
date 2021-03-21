@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.io.Serializable
 
-@Entity(tableName = "product")
+@Entity(tableName = "table_product")
 data class Product(
     var title: String,
     var price: Int,
@@ -24,6 +24,6 @@ data class Product(
 
 
     @PrimaryKey(autoGenerate = true)
-    lateinit var id: String
+    var id: Int = 0
 
 }

@@ -9,10 +9,13 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.inventory.ProductApplication
 import com.example.inventory.R
-import com.example.inventory.data.Product
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -23,7 +26,8 @@ class MainActivity : AppCompatActivity(), RecyclerAdapter.ItemClickListener {
         const val EDIT = 2
     }
 
-    private val productViewModel: ProductViewModel by viewModels {
+
+     private val productViewModel: ProductViewModel by viewModels {
         ProductViewModelFactory((application as ProductApplication).repository)
     }
 
@@ -35,10 +39,37 @@ class MainActivity : AppCompatActivity(), RecyclerAdapter.ItemClickListener {
         recycler.adapter = adapter
         recycler.layoutManager = LinearLayoutManager(this)
 
-
         productViewModel.allProducts.observe(this) { products ->
             products.let { adapter.submitList(it) }
         }
+
+        ItemTouchHelper(object :
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT.or(ItemTouchHelper.RIGHT)) {
+            override fun onMove(
+                recycler: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                TODO("Not yet implemented")
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val dialogBuilder = AlertDialog.Builder(this@MainActivity)
+                dialogBuilder.setMessage("Are you sure to delete this item?")
+                    .setCancelable(false)
+                    .setPositiveButton("DELETE") { _, _ ->
+                        productViewModel.delete(adapter.getItemAt(viewHolder.adapterPosition))
+                    }
+                dialogBuilder.setNegativeButton("CANCEL") { _, _ ->
+                    Toast.makeText(this@MainActivity, "Cancelled", Toast.LENGTH_SHORT).show()
+                    adapter.notifyDataSetChanged()
+                }
+                val alert = dialogBuilder.create()
+                alert.setTitle("CAUTION:")
+                alert.show()
+            }
+
+        }).attachToRecyclerView(recycler)
 
 
     }
@@ -47,7 +78,7 @@ class MainActivity : AppCompatActivity(), RecyclerAdapter.ItemClickListener {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CREATE && resultCode == Activity.RESULT_OK) {
             Toast.makeText(this, "New item has been added", Toast.LENGTH_SHORT).show()
-        } else if (requestCode == CREATE && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == EDIT && resultCode == Activity.RESULT_OK) {
             Toast.makeText(this, "Item has been Updated", Toast.LENGTH_SHORT).show()
         }
 
@@ -55,7 +86,7 @@ class MainActivity : AppCompatActivity(), RecyclerAdapter.ItemClickListener {
 
     fun deleteAll(item: MenuItem) {
         val dialogBuilder = AlertDialog.Builder(this@MainActivity)
-        dialogBuilder.setMessage("Are you sure to delete this item?")
+        dialogBuilder.setMessage("Are you sure to delete all items?")
             .setCancelable(false)
             .setPositiveButton("DELETE") { _, _ ->
                 productViewModel.deleteAll()
@@ -66,8 +97,8 @@ class MainActivity : AppCompatActivity(), RecyclerAdapter.ItemClickListener {
         val alert = dialogBuilder.create()
         alert.setTitle("CAUTION:")
         alert.show()
-        true
     }
+
 
     fun openEditor(view: View) {
         val intent = Intent(this, EditorActivity::class.java)
@@ -75,10 +106,15 @@ class MainActivity : AppCompatActivity(), RecyclerAdapter.ItemClickListener {
     }
 
     override fun onClick(position: Int) {
-        val intent = Intent(this, EditorActivity::class.java)
-        intent.putExtra("item", position)
+        var intent = Intent(baseContext, EditorActivity::class.java)
+        productViewModel.allProducts.observe(this, Observer {
+            intent.apply {
+                putExtra("product", it[position])
+            }
+        })
         startActivityForResult(intent, EDIT)
     }
 
 
 }
+

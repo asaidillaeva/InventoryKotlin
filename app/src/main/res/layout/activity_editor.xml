@@ -11,17 +11,24 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageView android:layout_height="34dp"
+            android:layout_width="34dp"
+            android:src="@drawable/ic_back"
+            android:layout_gravity="start|center"/>
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+
             app:menu="@menu/editor_menu"
             app:title="Edit &amp; Create "
             app:titleMarginStart="25dp" />
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.cardview.widget.CardView

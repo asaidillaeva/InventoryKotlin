@@ -25,7 +25,7 @@ abstract class ProductDB : RoomDatabase() {
                     //Delete all content
                     productDao.deleteAllItems()
 
-                    var product = Product("Oil", 5, 10, "Avedov")
+                    val product = Product("Oil", 5, 10, "Avedov")
                     productDao.insert(product)
                 }
             }
@@ -43,7 +43,7 @@ abstract class ProductDB : RoomDatabase() {
                 Room.databaseBuilder(
                     context.applicationContext,
                     ProductDB::class.java,
-                    "product"
+                    "table_product"
                 )
                     .build()
             })

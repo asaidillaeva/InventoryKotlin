@@ -1,13 +1,14 @@
 package com.example.inventory.ui
 
 import androidx.annotation.WorkerThread
+import androidx.lifecycle.LiveData
 import com.example.inventory.data.Product
 import com.example.inventory.data.ProductDao
 import kotlinx.coroutines.flow.Flow
 
 class ProductRepository(private val productDao: ProductDao) {
 
-    val allProducts: Flow<List<Product>> = productDao.getAllItems()
+    val allProducts: LiveData<List<Product>> = productDao.getAllItems()
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
@@ -33,9 +34,4 @@ class ProductRepository(private val productDao: ProductDao) {
         productDao.update(product)
     }
 
-    @Suppress("RedundantSuspendModifier")
-    @WorkerThread
-    suspend fun  getById(id:String){
-        productDao.getById(id)
-    }
 }

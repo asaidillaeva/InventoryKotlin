@@ -18,7 +18,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:logo="@drawable/ic_baseline_list_24"
             app:menu="@menu/main_menu"
             app:title="Inventory"
             app:titleMarginStart="25dp" />
